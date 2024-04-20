@@ -21,7 +21,7 @@ export default function Planets({
 }: ActiveInterface) {
   let { Planet } = useParams();
   let Planets = Datas.find((item) => item.name === Planet);
-  const [activeButton, setActiveButton] = useState<string>("");
+  const [activeButton, setActiveButton] = useState<string>("01");
 
   useEffect(() => {
     setActiveLink(`/Page/${Planet}`);
@@ -105,7 +105,35 @@ export default function Planets({
             }}
             transition={{ duration: 1.1 }}
           >
-            <img src={Planets.images.planet} alt="Planet Image" />
+            {overview && (
+              <img
+                src={Planets.images.planet}
+                alt="Planet Image"
+                className="activeImage"
+              />
+            )}
+
+            {structure && (
+              <img
+                src={Planets.images.internal}
+                alt="Planet Image"
+                className="activeImage"
+              />
+            )}
+            {geology && (
+              <div className="activeImage">
+                <img
+                  src={Planets.images.planet}
+                  alt="Planet Image"
+                  className="activeImage"
+                />
+                <img
+                  src={Planets.images.geology}
+                  alt="Planet Image"
+                  className="geology"
+                />
+              </div>
+            )}
           </motion.div>
           <div className="AboutPlanet">
             <motion.div
@@ -344,6 +372,26 @@ const PlanetImageAbout = styled.div<{
     margin-top: 0;
   }
 
+  .activeImage {
+    position: relative;
+    animation: animate 1s ease-in-out forwards;
+    opacity: 0;
+    transform: scale(0.8) rotate(180deg);
+  }
+
+  @keyframes animate {
+    from {
+      opacity: 0;
+      transform: scale(0.5);
+      transform: scale(0.8) rotate(180deg);
+    }
+    to {
+      transform: scale(1);
+      transform: scale(1) rotate(0deg);
+      opacity: 1;
+    }
+  }
+
   img {
     height: ${(props) => props.planetSizes.Desktop.height};
     width: ${(props) => props.planetSizes.Desktop.width};
@@ -356,6 +404,24 @@ const PlanetImageAbout = styled.div<{
     @media screen and (max-width: 500px) {
       height: ${(props) => props.planetSizes.Mobile.height};
       width: ${(props) => props.planetSizes.Mobile.width};
+    }
+
+    &.geology {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translate(-50%, -100%);
+      width: 150px;
+      height: 150px;
+      @media screen and (max-width: 970px) {
+        width: 120px;
+        height: 120px;
+      }
+
+      @media screen and (max-width: 500px) {
+        width: 80px;
+        height: 80px;
+      }
     }
   }
 

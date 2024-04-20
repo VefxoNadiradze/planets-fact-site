@@ -2,6 +2,7 @@ import styled from "styled-components";
 import Datas from "../data.json";
 import { Link } from "react-router-dom";
 import burgerImage from "/assets/icon-hamburger.svg";
+import arrowImage from "/assets/icon-chevron.svg";
 
 interface HeaderInterface {
   headerActive: boolean;
@@ -49,8 +50,15 @@ export default function Header({
                   setActiveLink(`/Page/${dataItem.name}`);
                 }}
               >
+                <MobileColors
+                  mobileColors={dataItem.Colors.color}
+                ></MobileColors>
                 {dataItem.name}
               </Link>
+
+              <span className="arrow">
+                <img src={arrowImage} alt="arrow image" />
+              </span>
             </li>
           );
         })}
@@ -141,6 +149,14 @@ const HeaderComponent = styled.header<{
         width: 100%;
         padding: 22px 32px 22px 24px;
         border-bottom: 1px solid #393850;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .arrow {
+          display: block !important;
+          transform: rotate(0deg);
+        }
       }
     }
 
@@ -155,6 +171,8 @@ const HeaderComponent = styled.header<{
         letter-spacing: 1px;
         text-transform: uppercase;
         transition: 0.3s ease-in-out;
+        display: flex;
+        align-items: center;
 
         &:hover {
           color: rgb(255, 255, 255);
@@ -172,6 +190,23 @@ const HeaderComponent = styled.header<{
           background-color: ${(props) => props.activeColors};
         }
       }
+
+      .arrow {
+        display: none;
+      }
     }
+  }
+`;
+
+const MobileColors = styled.span<{ mobileColors: string }>`
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: ${(props) => props.mobileColors};
+  margin-right: 28px;
+
+  @media screen and (min-width: 660px) {
+    display: none;
   }
 `;
