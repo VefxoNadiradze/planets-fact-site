@@ -2,7 +2,7 @@ import styled from "styled-components";
 import Datas from "../data.json";
 import { useParams } from "react-router-dom";
 import Sourceicon from "/assets/icon-source.svg";
-import { useState, MouseEvent } from "react";
+import { useState, MouseEvent, useEffect } from "react";
 import { motion } from "framer-motion";
 interface PlanetSizes {
   Desktop: { height: string; width: string };
@@ -10,9 +10,22 @@ interface PlanetSizes {
   Mobile: { height: string; width: string };
 }
 
-export default function Planets() {
+interface ActiveInterface {
+  setActiveLink: React.Dispatch<React.SetStateAction<string>>;
+  activeColor: string | {};
+}
+
+export default function Planets({
+  setActiveLink,
+  activeColor,
+}: ActiveInterface) {
   let { Planet } = useParams();
   let Planets = Datas.find((item) => item.name === Planet);
+  const [activeButton, setActiveButton] = useState<string>("");
+
+  useEffect(() => {
+    setActiveLink(`/Page/${Planet}`);
+  }, [Planet, setActiveLink]);
 
   const [overview, setOverview] = useState<boolean>(true);
   const [structure, setStructure] = useState<boolean>(false);
@@ -25,14 +38,17 @@ export default function Planets() {
       setOverview(true);
       setStructure(false);
       setGeology(false);
+      setActiveButton(target.firstElementChild.innerHTML);
     } else if (target.firstElementChild?.innerHTML === "02") {
       setOverview(false);
       setStructure(true);
       setGeology(false);
+      setActiveButton(target.firstElementChild.innerHTML);
     } else if (target.firstElementChild?.innerHTML === "03") {
       setOverview(false);
       setStructure(false);
       setGeology(true);
+      setActiveButton(target.firstElementChild.innerHTML);
     }
   };
 
@@ -42,6 +58,7 @@ export default function Planets() {
         <PlanetImageAbout
           planetSizes={Planets?.planetSize}
           planetName={Planets.name}
+          activeColor={activeColor}
         >
           <motion.div
             className="MobileButtonsParent"
@@ -176,14 +193,23 @@ export default function Planets() {
               }}
               transition={{ duration: 1.1 }}
             >
-              <button onClick={(e) => HandleDescription(e)}>
+              <button
+                className={activeButton == "01" ? "activeButton" : ""}
+                onClick={(e) => HandleDescription(e)}
+              >
                 <span>01</span>OVERVIEW
               </button>
 
-              <button onClick={(e) => HandleDescription(e)}>
+              <button
+                className={activeButton == "02" ? "activeButton" : ""}
+                onClick={(e) => HandleDescription(e)}
+              >
                 <span>02</span> Internal Structure
               </button>
-              <button onClick={(e) => HandleDescription(e)}>
+              <button
+                className={activeButton == "03" ? "activeButton" : ""}
+                onClick={(e) => HandleDescription(e)}
+              >
                 <span>03</span>
                 Surface Geology
               </button>
@@ -269,6 +295,7 @@ export default function Planets() {
 const PlanetImageAbout = styled.div<{
   planetSizes: PlanetSizes;
   planetName: string;
+  activeColor: string | {};
 }>`
   display: flex;
   align-items: center;
@@ -280,15 +307,16 @@ const PlanetImageAbout = styled.div<{
     display: none;
 
     @media screen and (max-width: 660px) {
-      margin-bottom: 50px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      margin-bottom: 96px;
+      display: flex;
+      justify-content: center;
       border-bottom: 1px solid #393850;
       width: 100%;
+      column-gap: 43px;
       button {
         border: none;
         background-color: transparent;
-        padding: 20px 24px;
+        padding: 20px 0;
         color: rgb(255, 255, 255);
         font-size: 9px;
         font-weight: 700;
@@ -300,6 +328,11 @@ const PlanetImageAbout = styled.div<{
           display: none;
         }
       }
+    }
+
+    @media screen and (max-width: 428px) {
+      column-gap: 18px;
+      flex-wrap: wrap;
     }
   }
 
@@ -419,6 +452,15 @@ const PlanetImageAbout = styled.div<{
         text-transform: uppercase;
         box-sizing: border-box;
         border: 1px solid #393850;
+        transition: 0.5s ease-in-out;
+
+        &.activeButton {
+          background-color: ${(props) => props.activeColor};
+        }
+
+        &:hover {
+          background-color: ${(props) => props.activeColor};
+        }
 
         @media screen and (max-width: 970px) {
           font-size: 9px;

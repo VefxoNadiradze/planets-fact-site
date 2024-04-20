@@ -2,12 +2,24 @@ import styled from "styled-components";
 import Datas from "../data.json";
 import { Link } from "react-router-dom";
 import burgerImage from "/assets/icon-hamburger.svg";
-import { useState } from "react";
 
-export default function Header() {
-  let [headerActive, setheaderActive] = useState<boolean>(false);
+interface HeaderInterface {
+  headerActive: boolean;
+  setheaderActive: React.Dispatch<React.SetStateAction<boolean>>;
+  activeLink: string;
+  setActiveLink: React.Dispatch<React.SetStateAction<string>>;
+  activeColor: string | object;
+}
+
+export default function Header({
+  headerActive,
+  setheaderActive,
+  activeLink,
+  setActiveLink,
+  activeColor,
+}: HeaderInterface) {
   return (
-    <HeaderComponent headerActive={headerActive}>
+    <HeaderComponent headerActive={headerActive} activeColors={activeColor}>
       <div className="logo-burger">
         <Link to={"/Page/Earth"} className="Logo">
           THE PLANETS
@@ -27,8 +39,15 @@ export default function Header() {
             <li key={index}>
               <Link
                 to={`/Page/${dataItem.name}`}
-                className="navItems"
-                onClick={() => setheaderActive(false)}
+                className={
+                  activeLink == `/Page/${dataItem.name}`
+                    ? "navItems activeNavitem"
+                    : "navItems "
+                }
+                onClick={() => {
+                  setheaderActive(false);
+                  setActiveLink(`/Page/${dataItem.name}`);
+                }}
               >
                 {dataItem.name}
               </Link>
@@ -40,7 +59,11 @@ export default function Header() {
   );
 }
 
-const HeaderComponent = styled.header<{ headerActive: boolean }>`
+const HeaderComponent = styled.header<{
+  headerActive: boolean;
+  activeColors: string | {};
+}>`
+  position: relative;
   padding: 22px 32px;
   display: flex;
   align-items: center;
@@ -53,13 +76,10 @@ const HeaderComponent = styled.header<{ headerActive: boolean }>`
   }
 
   @media screen and (max-width: 660px) {
-    align-items: flex-start;
-    position: fixed;
     z-index: 10;
     padding: 0;
     width: 100%;
     gap: 0;
-    background: rgb(7, 7, 36);
   }
 
   .Logo {
@@ -101,18 +121,21 @@ const HeaderComponent = styled.header<{ headerActive: boolean }>`
     display: flex;
     align-items: center;
     column-gap: 32px;
-    transition: 1s ease-in-out;
+    transition: 0.5s ease-in-out;
 
     @media screen and (max-width: 660px) {
-      position: fixed;
+      position: absolute;
       transform: ${(props) =>
         props.headerActive ? "translateX(0%)" : "translateX(-300%)"};
-      top: 68px;
+      top: 70px;
       flex-direction: column;
       align-items: flex-start;
-      min-height: 100vh;
+      height: 100vh;
       width: 100%;
       background: rgb(7, 7, 36);
+      z-index: 10;
+      padding: 10px 0 67px 0;
+      overflow: auto;
 
       li {
         width: 100%;
@@ -122,6 +145,7 @@ const HeaderComponent = styled.header<{ headerActive: boolean }>`
     }
 
     li {
+      position: relative;
       .navItems {
         color: #c1c1c7;
         text-decoration: none;
@@ -134,6 +158,18 @@ const HeaderComponent = styled.header<{ headerActive: boolean }>`
 
         &:hover {
           color: rgb(255, 255, 255);
+        }
+      }
+      @media screen and (min-width: 971px) {
+        .activeNavitem::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 50%;
+          transform: translate(-50%, -100%);
+          width: 100%;
+          height: 5px;
+          background-color: ${(props) => props.activeColors};
         }
       }
     }
